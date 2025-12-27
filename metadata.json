@@ -1,0 +1,7 @@
+{
+  "name": "Meghan – Empathy-First Student Wellness Assistant",
+  "description": "A digital companion designed for university students to intervene in 'silent spirals' using sensory-first grounding, proactive triage, and habit-emotional correlation.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
