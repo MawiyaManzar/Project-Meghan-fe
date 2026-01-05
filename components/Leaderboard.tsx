@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Trophy, Medal, Star, Flame } from 'lucide-react';
+import { Trophy, Medal, Star, Flame, Heart } from 'lucide-react';
 import { MOCK_LEADERBOARD } from '../constants';
 import { UserState } from '../types';
 
@@ -9,7 +9,14 @@ interface LeaderboardProps {
 }
 
 const Leaderboard: React.FC<LeaderboardProps> = ({ user }) => {
-  const allEntries = [...MOCK_LEADERBOARD, { rank: 0, name: "You", level: user.level, xp: user.xp, isUser: true }]
+  const allEntries = [...MOCK_LEADERBOARD, { 
+    rank: 0, 
+    name: "You", 
+    level: user.level, 
+    xp: user.xp, 
+    empathyPoints: user.empathyPoints,
+    isUser: true 
+  }]
     .sort((a, b) => b.xp - a.xp)
     .map((e, i) => ({ ...e, rank: i + 1 }));
 
@@ -29,11 +36,12 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ user }) => {
       </div>
 
       <div className="glass rounded-[40px] overflow-hidden shadow-xl border border-slate-100">
-        <div className="bg-white/80 p-6 border-b flex justify-between text-xs font-bold text-slate-400 uppercase tracking-widest">
+        <div className="bg-white/80 p-6 border-b flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-widest">
           <span>Rank & Guardian</span>
-          <div className="flex gap-12 mr-8">
-            <span>Level</span>
-            <span>Total XP</span>
+          <div className="flex gap-8 mr-8">
+            <span className="w-16">Empathy</span>
+            <span className="w-16">Level</span>
+            <span className="w-16">Total XP</span>
           </div>
         </div>
 
@@ -55,11 +63,14 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ user }) => {
                   <span className={`font-semibold ${entry.isUser ? 'text-emerald-700' : 'text-slate-700'}`}>
                     {entry.name} {entry.isUser && <span className="text-[10px] ml-2 bg-emerald-100 px-2 py-0.5 rounded-full">YOU</span>}
                   </span>
-                  <span className="text-xs text-slate-400">Guardian Spirit</span>
+                  <span className="text-xs text-slate-400 font-medium tracking-tight">Guardian Spirit</span>
                 </div>
               </div>
 
-              <div className="flex gap-12 mr-6 text-sm">
+              <div className="flex gap-8 mr-6 text-sm">
+                <div className="w-16 flex items-center gap-1 font-bold text-emerald-500">
+                  <Heart size={14} fill="currentColor" /> {entry.empathyPoints ?? 0}
+                </div>
                 <div className="w-16 flex items-center gap-1 font-bold text-slate-700">
                   <Star size={14} className="text-amber-400" /> {entry.level}
                 </div>
@@ -72,7 +83,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ user }) => {
         </div>
       </div>
       
-      <p className="text-center text-xs text-slate-400 italic">
+      <p className="text-center text-[10px] text-slate-400 italic font-bold">
         * Leaderboard uses anonymous spirit names to protect privacy.
       </p>
     </div>

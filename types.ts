@@ -23,6 +23,13 @@ export interface UserBio {
   major: string;
   hobbies: string;
   values: string;
+  dailyReminder?: string;
+}
+
+export interface SmallPromise {
+  id: string;
+  text: string;
+  completed: boolean;
 }
 
 export interface UserState {
@@ -35,7 +42,9 @@ export interface UserState {
   pomoSessions: number;
   xp: number;
   level: number;
+  empathyPoints: number;
   bio: UserBio;
+  promises: SmallPromise[];
 }
 
 export interface ChatMessage {
@@ -48,5 +57,6 @@ export interface LeaderboardEntry {
   name: string;
   level: number;
   xp: number;
+  empathyPoints?: number;
   isUser?: boolean;
 }
