@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Mood, StressSource, RiskTier, UserState, UserBio, SmallPromise } from './types';
 import { CRISIS_KEYWORDS } from './constants';
+import { getMeghanResponse } from './services/gemini';
 import DynamicOrb from './components/DynamicOrb';
 import Chat from './components/Chat';
 import Dashboard from './components/Dashboard';
@@ -25,7 +26,10 @@ import {
   BrainCircuit, 
   Trophy, 
   Star,
-  User
+  User,
+  Laugh,
+  X,
+  Sparkles
 } from 'lucide-react';
 
 const DEFAULT_PROMISES: SmallPromise[] = [
@@ -35,7 +39,7 @@ const DEFAULT_PROMISES: SmallPromise[] = [
 ];
 
 const App: React.FC = () => {
-  const [step, setStep] = useState<'onboarding' | 'triage' | 'tutorial' | 'main'>('onboarding');
+  const [step, setStep] = useState<'onboarding' | 'triage' | 'naming' | 'tutorial' | 'main'>('onboarding');
   const [userState, setUserState] = useState<UserState>({
     mood: Mood.CALM,
     source: StressSource.OTHERS,
@@ -43,6 +47,8 @@ const App: React.FC = () => {
     steps: 4210,
     sleepHours: 6,
     pomoSessions: 0,
+    soundSessions: 0,
+    reminderSaved: false,
     xp: 0,
     level: 1,
     empathyPoints: 0,
@@ -51,11 +57,14 @@ const App: React.FC = () => {
       major: '',
       hobbies: '',
       values: '',
-      dailyReminder: ''
+      dailyReminder: '',
+      futureVision: ''
     },
     promises: DEFAULT_PROMISES
   });
   const [activeTab, setActiveTab] = useState<'chat' | 'dashboard' | 'social' | 'tools' | 'knowledge' | 'leaderboard'>('chat');
+  const [joke, setJoke] = useState<string | null>(null);
+  const [isJokeLoading, setIsJokeLoading] = useState(false);
 
   const addXP = (amount: number) => {
     setUserState(prev => {
@@ -77,7 +86,8 @@ const App: React.FC = () => {
     const isNewValue = !userState.bio[field] && value.trim() !== '';
     setUserState(prev => ({
       ...prev,
-      bio: { ...prev.bio, [field]: value }
+      bio: { ...prev.bio, [field]: value },
+      reminderSaved: field === 'dailyReminder' ? true : prev.reminderSaved
     }));
     if (isNewValue) addXP(20);
   };
@@ -87,7 +97,6 @@ const App: React.FC = () => {
       const newPromises = prev.promises.map(p => 
         p.id === id ? { ...p, completed: !p.completed } : p
       );
-      // Give XP on completion
       const newlyCompleted = newPromises.find(p => p.id === id)?.completed;
       if (newlyCompleted) setTimeout(() => addXP(10), 100);
       return { ...prev, promises: newPromises };
@@ -101,6 +110,11 @@ const App: React.FC = () => {
     if (userState.mood === Mood.ANXIOUS || userState.mood === Mood.SAD) tier = RiskTier.YELLOW;
     if (text && CRISIS_KEYWORDS.some(kw => text.toLowerCase().includes(kw))) tier = RiskTier.RED;
     setUserState(prev => ({ ...prev, source, otherText: text, tier }));
+    setStep('naming');
+  };
+
+  const handleNamingComplete = () => {
+    if (!userState.bio.name.trim()) return;
     setStep('tutorial');
     addXP(15);
   };
@@ -108,6 +122,27 @@ const App: React.FC = () => {
   const handleTutorialComplete = () => {
     setStep('main');
     addXP(25);
+  };
+
+  const handleMakeMeLaugh = async () => {
+    if (isJokeLoading) return;
+    setIsJokeLoading(true);
+    try {
+      const response = await getMeghanResponse(
+        [{ role: 'user', content: 'Tell me a joke that will make me laugh, keep it wholesome and sibling-like.' }],
+        userState.tier, 
+        userState.mood, 
+        userState.source, 
+        userState.bio
+      );
+      setJoke(response);
+      addXP(5);
+    } catch (err) {
+      console.error(err);
+      setJoke("Why did the pillow go to the doctor? It was feeling a bit down.");
+    } finally {
+      setIsJokeLoading(false);
+    }
   };
 
   if (step === 'onboarding') {
@@ -153,20 +188,78 @@ const App: React.FC = () => {
     );
   }
 
+  if (step === 'naming') {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-50">
+        <div className="max-w-md w-full space-y-8 glass p-10 rounded-[48px] shadow-2xl">
+          <div className="text-center space-y-2">
+            <div className="w-16 h-16 bg-teal-100 text-teal-600 rounded-3xl flex items-center justify-center mx-auto mb-4">
+              <User size={32} />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-800">Almost there...</h2>
+            <p className="text-slate-500 text-sm">Before we begin, what can I call you?</p>
+          </div>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Your Name</label>
+              <input 
+                type="text" 
+                value={userState.bio.name}
+                onChange={(e) => updateBio('name', e.target.value)}
+                placeholder="How should I address you?"
+                className="w-full p-5 rounded-[24px] border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
+              />
+            </div>
+            <button 
+              onClick={handleNamingComplete}
+              disabled={!userState.bio.name.trim()}
+              className="w-full py-5 bg-teal-500 text-white rounded-full font-bold shadow-xl shadow-teal-200 hover:bg-teal-600 disabled:opacity-50 transition-all"
+            >
+              Start Connection
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (step === 'tutorial') {
     return <Tutorial onComplete={handleTutorialComplete} />;
   }
 
   return (
     <div className="min-h-screen bg-[#fcfdfe] pb-24 lg:pb-0 lg:pl-64">
+      {/* Joke Notification */}
+      {joke && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-lg animate-in slide-in-from-top duration-500">
+          <div className="glass p-6 rounded-[32px] border-emerald-100 bg-white shadow-2xl flex flex-col gap-3 relative">
+            <button onClick={() => setJoke(null)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors">
+              <X size={18} />
+            </button>
+            <div className="flex items-center gap-2 text-emerald-500 mb-1">
+              <Laugh size={20} />
+              <span className="text-[10px] font-bold uppercase tracking-widest">Meghan's Sense of Humor</span>
+            </div>
+            <p className="text-slate-700 font-medium leading-relaxed">{joke}</p>
+            <button 
+              onClick={() => setJoke(null)}
+              className="mt-2 py-2 px-6 bg-emerald-50 text-emerald-600 rounded-full text-xs font-bold hover:bg-emerald-100 transition-colors self-end"
+            >
+              Haha, thanks!
+            </button>
+          </div>
+        </div>
+      )}
+
       <nav className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 glass border-r flex-col p-6 z-50">
         <div className="flex items-center gap-3 mb-10">
           <div className="w-10 h-10 bg-teal-500 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg shadow-teal-100">M</div>
           <span className="text-xl font-bold text-slate-800">Meghan</span>
         </div>
-        <div className="mb-8 p-4 bg-gradient-to-br from-teal-500 to-indigo-600 rounded-3xl text-white shadow-xl shadow-teal-100 flex flex-col items-center text-center">
-          <Star size={24} className="mb-2 fill-white" />
-          <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">Spirit Level {userState.level}</span>
+        <div className="mb-8 p-4 bg-gradient-to-br from-indigo-500 to-teal-600 rounded-3xl text-white shadow-xl shadow-indigo-100 flex flex-col items-center text-center">
+          <Sparkles size={24} className="mb-2 fill-white" />
+          <span className="text-[10px] font-bold uppercase tracking-widest opacity-80 leading-tight">Your Future Successful Self</span>
+          <div className="text-lg font-black mt-1">Growth Phase {userState.level}</div>
           <div className="w-full h-1.5 bg-white/20 rounded-full mt-3 overflow-hidden">
             <div className="bg-white h-full rounded-full transition-all duration-500" style={{ width: `${(userState.xp % 200) / 200 * 100}%` }} />
           </div>
@@ -187,13 +280,26 @@ const App: React.FC = () => {
             <h1 className="text-2xl font-bold text-slate-800">Meghan</h1>
             <p className="text-slate-500 text-sm font-medium">Your digital older sibling.</p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+             <button 
+               onClick={handleMakeMeLaugh}
+               disabled={isJokeLoading}
+               className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-xs transition-all shadow-sm active:scale-95 ${
+                 isJokeLoading 
+                 ? 'bg-amber-50 text-amber-400 cursor-wait' 
+                 : 'bg-amber-100 text-amber-600 hover:bg-amber-200 hover:shadow-md'
+               }`}
+             >
+               <Laugh size={16} className={isJokeLoading ? 'animate-bounce' : ''} />
+               {isJokeLoading ? 'Thinking...' : 'Make me laugh!'}
+             </button>
+
              <button 
                onClick={() => setActiveTab('knowledge')}
                className="flex items-center gap-3 px-5 py-2.5 bg-white border border-slate-100 rounded-full shadow-sm hover:shadow-md transition-all group"
              >
                <div className="text-right hidden sm:block">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Your Profile</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Profile</p>
                   <p className="text-sm font-bold text-slate-700">{userState.bio.name || 'Friend'}</p>
                </div>
                <div className="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg shadow-teal-100 group-hover:scale-105 transition-transform">
@@ -207,7 +313,7 @@ const App: React.FC = () => {
         {activeTab === 'dashboard' && <Dashboard data={userState} />}
         {activeTab === 'knowledge' && <KnowledgeCenter bio={userState.bio} onUpdate={updateBio} />}
         {activeTab === 'leaderboard' && <Leaderboard user={userState} />}
-        {activeTab === 'social' && <PeerClusters empathyPoints={userState.empathyPoints} onEmpathyGain={addEmpathyPoints} />}
+        {activeTab === 'social' && <PeerClusters source={userState.source} empathyPoints={userState.empathyPoints} onEmpathyGain={addEmpathyPoints} />}
         {activeTab === 'tools' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-8">
@@ -218,7 +324,10 @@ const App: React.FC = () => {
               }} />
             </div>
             <div className="space-y-8">
-              <SoundTherapy />
+              <SoundTherapy onSoundStart={() => {
+                setUserState(prev => ({...prev, soundSessions: prev.soundSessions + 1}));
+                addXP(5);
+              }} />
               <DailyReminder initialText={userState.bio.dailyReminder || ""} onSaveText={(txt) => updateBio('dailyReminder', txt)} />
             </div>
           </div>

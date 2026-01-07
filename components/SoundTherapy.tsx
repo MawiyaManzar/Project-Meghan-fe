@@ -1,14 +1,18 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { CloudRain, Wind, Bird, Play, Pause, Music } from 'lucide-react';
 
 const SOUNDS = [
-  { id: 'rain', name: 'Gentle Rain', icon: <CloudRain size={20} />, url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' }, // Placeholder URLs
+  { id: 'rain', name: 'Gentle Rain', icon: <CloudRain size={20} />, url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
   { id: 'white', name: 'White Noise', icon: <Wind size={20} />, url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
   { id: 'birds', name: 'Forest Birds', icon: <Bird size={20} />, url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
 ];
 
-const SoundTherapy: React.FC = () => {
+interface SoundTherapyProps {
+  onSoundStart?: () => void;
+}
+
+const SoundTherapy: React.FC<SoundTherapyProps> = ({ onSoundStart }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -22,6 +26,7 @@ const SoundTherapy: React.FC = () => {
         audioRef.current.play().catch(e => console.log("Audio play blocked", e));
       }
       setActiveId(sound.id);
+      if (onSoundStart) onSoundStart();
     }
   };
 

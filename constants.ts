@@ -1,5 +1,5 @@
 
-import { RiskTier, UserBio, LeaderboardEntry } from './types';
+import { RiskTier, UserBio, LeaderboardEntry, StressSource } from './types';
 
 export const SYSTEM_INSTRUCTIONS = (tier: RiskTier, mood: string, source: string, bio: UserBio) => `
 You are Meghan, an "Older Sibling" figure—calm, protective, and non-judgmental.
@@ -27,10 +27,34 @@ Guidelines:
 export const CRISIS_KEYWORDS = ["hopeless", "hurt", "kill", "suicide", "end it", "worthless", "pain", "empty"];
 
 export const PEER_CLUSTERS = [
-  { id: '1', name: 'Career Anxiety Group', description: 'Finding your path when the future feels blurry.', members: 124 },
-  { id: '2', name: 'Relationship Roots', description: 'Navigating connections and boundaries.', members: 89 },
-  { id: '3', name: 'Academic Burnout Room', description: 'When the library feels like a cage.', members: 312 },
-  { id: '4', name: 'General Grounding', description: 'A quiet space for those just needing a breath.', members: 540 },
+  { 
+    id: '1', 
+    source: StressSource.ACADEMICS,
+    name: 'Sanctuary of Scholars', 
+    description: 'A quiet space for those navigating the weight of expectations and the search for their path.', 
+    members: 124 
+  },
+  { 
+    id: '2', 
+    source: StressSource.RELATIONSHIP,
+    name: 'The Empathy Grove', 
+    description: 'Connecting with others to find balance in our bonds and peace in our interactions.', 
+    members: 89 
+  },
+  { 
+    id: '3', 
+    source: StressSource.FAMILY,
+    name: 'The Roots Room', 
+    description: 'Exploring the complexities of where we come from while growing into who we are.', 
+    members: 312 
+  },
+  { 
+    id: '4', 
+    source: StressSource.OTHERS,
+    name: 'The Horizon Glade', 
+    description: 'A dedicated space for processing life’s many unexpected turns and finding a steady rhythm.', 
+    members: 540 
+  },
 ];
 
 export const MOCK_LEADERBOARD: LeaderboardEntry[] = [

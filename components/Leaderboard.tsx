@@ -40,7 +40,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ user }) => {
           <span>Rank & Guardian</span>
           <div className="flex gap-8 mr-8">
             <span className="w-16">Empathy</span>
-            <span className="w-16">Level</span>
+            <span className="w-20">Self Growth</span>
             <span className="w-16">Total XP</span>
           </div>
         </div>
@@ -71,8 +71,8 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ user }) => {
                 <div className="w-16 flex items-center gap-1 font-bold text-emerald-500">
                   <Heart size={14} fill="currentColor" /> {entry.empathyPoints ?? 0}
                 </div>
-                <div className="w-16 flex items-center gap-1 font-bold text-slate-700">
-                  <Star size={14} className="text-amber-400" /> {entry.level}
+                <div className="w-20 flex items-center gap-1 font-bold text-slate-700">
+                  <Star size={14} className="text-amber-400" /> Phase {entry.level}
                 </div>
                 <div className="w-16 font-mono font-medium text-slate-500">
                   {entry.xp.toLocaleString()}

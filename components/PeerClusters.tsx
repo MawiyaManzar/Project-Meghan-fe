@@ -1,18 +1,22 @@
 
 import React, { useState } from 'react';
-import { Users, Info, ExternalLink, Heart, Send, Sparkles } from 'lucide-react';
+import { Users, Info, ExternalLink, Heart, Send, Sparkles, ShieldCheck } from 'lucide-react';
 import { PEER_CLUSTERS } from '../constants';
+import { StressSource } from '../types';
 
 interface PeerClustersProps {
+  source: StressSource;
   empathyPoints: number;
   onEmpathyGain: (amount: number) => void;
 }
 
-const PeerClusters: React.FC<PeerClustersProps> = ({ empathyPoints, onEmpathyGain }) => {
+const PeerClusters: React.FC<PeerClustersProps> = ({ source, empathyPoints, onEmpathyGain }) => {
   const [supportText, setSupportText] = useState('');
-  const [selectedCluster, setSelectedCluster] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+
+  // Filter to only show the user's specific cluster based on their current stressor
+  const myCluster = PEER_CLUSTERS.find(c => c.source === source) || PEER_CLUSTERS[3];
 
   const handleSupportSubmit = () => {
     if (!supportText.trim()) return;
@@ -24,9 +28,8 @@ const PeerClusters: React.FC<PeerClustersProps> = ({ empathyPoints, onEmpathyGai
     setTimeout(() => setShowSuccess(false), 3000);
   };
 
-  const handleQuickSupport = (e: React.MouseEvent, clusterName: string) => {
-    e.stopPropagation(); // Don't trigger the cluster selection
-    setSuccessMessage(`Support sent to ${clusterName}!`);
+  const handleQuickSupport = () => {
+    setSuccessMessage(`Support sent to ${myCluster.name}!`);
     onEmpathyGain(5);
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 2000);
@@ -53,46 +56,51 @@ const PeerClusters: React.FC<PeerClustersProps> = ({ empathyPoints, onEmpathyGai
 
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
-          <Users className="text-emerald-500" size={24} /> Anonymous Clusters
+          <ShieldCheck className="text-emerald-500" size={24} /> Your Dedicated Safe Space
         </h2>
         <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
-          Safe Space Active
+          Private Access Active
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {PEER_CLUSTERS.map((cluster) => (
-          <div 
-            key={cluster.id} 
-            onClick={() => setSelectedCluster(cluster.name)}
-            className={`glass p-5 rounded-3xl transition-all cursor-pointer group relative border ${
-              selectedCluster === cluster.name ? 'border-emerald-500 ring-2 ring-emerald-100 bg-white' : 'hover:border-emerald-200'
-            }`}
-          >
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">{cluster.name}</h3>
-              <div className="flex items-center gap-1 text-slate-400 text-xs font-bold">
-                <Users size={14} />
-                {cluster.members}
+      {/* The Single User-Specific Cluster */}
+      <div className="glass p-8 rounded-[48px] border-2 border-emerald-50 bg-white shadow-2xl relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+          <Users size={120} />
+        </div>
+        
+        <div className="relative z-10 flex flex-col gap-6">
+          <div className="flex items-start justify-between">
+            <div className="space-y-1">
+              <span className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.3em]">Guardian Cluster</span>
+              <h3 className="text-3xl font-bold text-slate-800 tracking-tight">{myCluster.name}</h3>
+            </div>
+            <div className="flex flex-col items-end">
+              <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-2xl font-bold text-xs">
+                <Users size={16} />
+                {myCluster.members} Active Spirits
               </div>
             </div>
-            <p className="text-sm text-slate-500 mb-4 font-medium h-10 overflow-hidden line-clamp-2">{cluster.description}</p>
-            <div className="flex items-center justify-between mt-auto">
-              <button className="text-[10px] font-black text-slate-400 group-hover:text-emerald-500 uppercase tracking-widest flex items-center gap-1">
-                Enter Space <ExternalLink size={12} />
-              </button>
-              
-              <button 
-                onClick={(e) => handleQuickSupport(e, cluster.name)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white transition-all text-[10px] font-bold border border-rose-100 shadow-sm active:scale-90"
-                title="Send a quick wave of support"
-              >
-                <Heart size={12} fill="currentColor" />
-                Support
-              </button>
+          </div>
+
+          <p className="text-lg text-slate-500 leading-relaxed font-light max-w-2xl">
+            {myCluster.description}
+          </p>
+
+          <div className="flex flex-wrap gap-4 mt-4">
+            <button 
+              onClick={handleQuickSupport}
+              className="flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-rose-500 text-white hover:bg-rose-600 transition-all font-bold shadow-lg shadow-rose-100 active:scale-95"
+            >
+              <Heart size={20} fill="currentColor" />
+              Send Strength
+            </button>
+            <div className="flex items-center gap-2 px-6 py-3.5 rounded-full bg-slate-50 text-slate-500 font-bold text-sm">
+               <Sparkles size={16} className="text-emerald-500" />
+               Only you can see this space
             </div>
           </div>
-        ))}
+        </div>
       </div>
 
       {/* Share Wisdom Section */}
@@ -102,8 +110,8 @@ const PeerClusters: React.FC<PeerClustersProps> = ({ empathyPoints, onEmpathyGai
             <Sparkles size={24} />
           </div>
           <div>
-            <h3 className="font-bold text-slate-800">Offer a Hand</h3>
-            <p className="text-sm text-slate-500">Share words of grounding with your {selectedCluster || 'peers'}.</p>
+            <h3 className="font-bold text-slate-800">Grounding Message</h3>
+            <p className="text-sm text-slate-500">Contribute words of support to the {myCluster.name} community.</p>
           </div>
         </div>
 
@@ -112,9 +120,8 @@ const PeerClusters: React.FC<PeerClustersProps> = ({ empathyPoints, onEmpathyGai
             <textarea 
               value={supportText}
               onChange={(e) => setSupportText(e.target.value)}
-              placeholder={selectedCluster ? `Write something supportive for the ${selectedCluster}...` : "Select a cluster above and share some grounding advice..."}
-              disabled={!selectedCluster}
-              className="w-full p-5 rounded-[32px] border border-slate-100 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-100 min-h-[120px] text-sm leading-relaxed transition-all"
+              placeholder={`Write something grounding for the ${myCluster.members} others in this space...`}
+              className="w-full p-6 rounded-[32px] border border-slate-100 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-100 min-h-[140px] text-sm leading-relaxed transition-all"
             />
             {showSuccess && (
               <div className="absolute inset-0 bg-emerald-500/95 rounded-[32px] flex flex-col items-center justify-center text-white animate-in fade-in zoom-in duration-300 z-10 text-center px-4">
@@ -126,32 +133,32 @@ const PeerClusters: React.FC<PeerClustersProps> = ({ empathyPoints, onEmpathyGai
           </div>
           <button 
             onClick={handleSupportSubmit}
-            disabled={!supportText.trim() || !selectedCluster}
+            disabled={!supportText.trim()}
             className="w-full py-4 bg-indigo-600 text-white rounded-full font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 disabled:opacity-30 disabled:shadow-none transition-all flex items-center justify-center gap-2 group active:scale-[0.98]"
           >
             <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" /> 
-            Share Wisdom
+            Anonymously Share Wisdom
           </button>
         </div>
       </div>
 
-      {/* Expert Quote Placeholder */}
-      <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-[32px] relative overflow-hidden">
+      {/* Educational Footer */}
+      <div className="bg-emerald-50 border border-emerald-100 p-8 rounded-[40px] relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-100/50 rounded-full -translate-y-1/2 translate-x-1/2" />
-        <div className="flex items-start gap-4 relative z-10">
-          <div className="p-3 bg-white text-emerald-600 rounded-2xl shadow-sm">
-            <Info size={24} />
+        <div className="flex items-start gap-5 relative z-10">
+          <div className="p-4 bg-white text-emerald-600 rounded-3xl shadow-sm">
+            <Info size={28} />
           </div>
           <div>
-            <h3 className="font-bold text-emerald-900 mb-1">Community Insight</h3>
+            <h3 className="font-bold text-emerald-900 text-lg mb-2">Why am I only seeing this cluster?</h3>
             <p className="text-sm text-emerald-700 leading-relaxed mb-4 italic">
-              "We often feel alone in our stress, but in this space, you're part of a forest. Even when one tree struggles, the roots beneath share the burden."
+              "Healing happens best in communities that understand your specific journey. By focusing on the {myCluster.name}, Meghan ensures you are surrounded by roots that share the same soil."
             </p>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-white border-2 border-emerald-200 overflow-hidden flex items-center justify-center font-bold text-[10px] text-emerald-600">
-                AT
+                M
               </div>
-              <span className="text-xs font-bold text-emerald-500 uppercase tracking-widest">Global Support Feed</span>
+              <span className="text-xs font-bold text-emerald-500 uppercase tracking-widest">Meghan’s Philosophy</span>
             </div>
           </div>
         </div>

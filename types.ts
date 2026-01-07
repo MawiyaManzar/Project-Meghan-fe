@@ -24,6 +24,7 @@ export interface UserBio {
   hobbies: string;
   values: string;
   dailyReminder?: string;
+  futureVision?: string;
 }
 
 export interface SmallPromise {
@@ -40,6 +41,8 @@ export interface UserState {
   steps: number;
   sleepHours: number;
   pomoSessions: number;
+  soundSessions: number;
+  reminderSaved: boolean;
   xp: number;
   level: number;
   empathyPoints: number;
