@@ -29,7 +29,8 @@ import {
   User,
   Laugh,
   X,
-  Sparkles
+  Sparkles,
+  MessageSquareQuote
 } from 'lucide-react';
 
 const DEFAULT_PROMISES: SmallPromise[] = [
@@ -39,7 +40,7 @@ const DEFAULT_PROMISES: SmallPromise[] = [
 ];
 
 const App: React.FC = () => {
-  const [step, setStep] = useState<'onboarding' | 'triage' | 'naming' | 'tutorial' | 'main'>('onboarding');
+  const [step, setStep] = useState<'onboarding' | 'triage' | 'feeling' | 'naming' | 'tutorial' | 'main'>('onboarding');
   const [userState, setUserState] = useState<UserState>({
     mood: Mood.CALM,
     source: StressSource.OTHERS,
@@ -65,6 +66,7 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'chat' | 'dashboard' | 'social' | 'tools' | 'knowledge' | 'leaderboard'>('chat');
   const [joke, setJoke] = useState<string | null>(null);
   const [isJokeLoading, setIsJokeLoading] = useState(false);
+  const [detailedFeelingText, setDetailedFeelingText] = useState('');
 
   const addXP = (amount: number) => {
     setUserState(prev => {
@@ -109,7 +111,21 @@ const App: React.FC = () => {
     let tier = RiskTier.GREEN;
     if (userState.mood === Mood.ANXIOUS || userState.mood === Mood.SAD) tier = RiskTier.YELLOW;
     if (text && CRISIS_KEYWORDS.some(kw => text.toLowerCase().includes(kw))) tier = RiskTier.RED;
+    
     setUserState(prev => ({ ...prev, source, otherText: text, tier }));
+    
+    if (source === StressSource.OTHERS) {
+      setStep('naming');
+    } else {
+      setStep('feeling');
+    }
+  };
+
+  const handleFeelingContinue = () => {
+    if (detailedFeelingText.trim()) {
+      setUserState(prev => ({ ...prev, otherText: detailedFeelingText }));
+      addXP(10);
+    }
     setStep('naming');
   };
 
@@ -142,6 +158,19 @@ const App: React.FC = () => {
       setJoke("Why did the pillow go to the doctor? It was feeling a bit down.");
     } finally {
       setIsJokeLoading(false);
+    }
+  };
+
+  const getStressorQuestion = () => {
+    switch (userState.source) {
+      case StressSource.ACADEMICS:
+        return "I know university life can be a marathon. What specifically about your studies is draining your energy right now?";
+      case StressSource.RELATIONSHIP:
+        return "Navigating connections with others isn't always easy. Is there something specific in your interactions that's weighing on your heart?";
+      case StressSource.FAMILY:
+        return "Our roots go deep, and sometimes that brings complexity. What's happening in your family space that you'd like to vent about?";
+      default:
+        return "Tell me more about what you're experiencing...";
     }
   };
 
@@ -179,10 +208,42 @@ const App: React.FC = () => {
           </div>
           {userState.source === StressSource.OTHERS && (
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <textarea className="w-full p-4 md:p-5 rounded-[24px] md:rounded-[32px] border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-400 min-h-[100px] md:min-h-[120px] text-sm leading-relaxed" placeholder="Briefly share what's happening..." onChange={(e) => setUserState({...userState, otherText: e.target.value})} />
+              <textarea className="w-full p-4 md:p-5 rounded-[24px] md:rounded-[32px] border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-400 min-h-[100px] md:min-h-[120px] text-sm leading-relaxed text-slate-900" placeholder="Briefly share what's happening..." onChange={(e) => setUserState({...userState, otherText: e.target.value})} />
               <button onClick={() => handleTriageContinue(StressSource.OTHERS, userState.otherText)} className="w-full py-4 md:py-5 bg-teal-500 text-white rounded-full font-bold shadow-xl shadow-teal-200 hover:bg-teal-600 transition-all active:scale-95">Find Clarity</button>
             </div>
           )}
+        </div>
+      </div>
+    );
+  }
+
+  if (step === 'feeling') {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 md:p-6 bg-slate-50">
+        <div className="max-w-lg w-full space-y-6 md:space-y-8 glass p-6 md:p-10 rounded-[32px] md:rounded-[48px] shadow-2xl">
+          <div className="text-center space-y-2">
+            <div className="w-12 h-12 md:w-16 md:h-16 bg-teal-100 text-teal-600 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4">
+              <MessageSquareQuote size={24} md:size={32} />
+            </div>
+            <h2 className="text-xl md:text-2xl font-bold text-slate-800">Unpacking the weight</h2>
+            <p className="text-slate-500 text-xs md:text-sm font-medium">{getStressorQuestion()}</p>
+          </div>
+          <div className="space-y-4">
+            <textarea 
+              className="w-full p-4 md:p-5 rounded-[24px] md:rounded-[32px] border border-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-400 min-h-[120px] md:min-h-[160px] text-sm leading-relaxed bg-slate-900 text-white placeholder:text-slate-400 shadow-inner" 
+              placeholder="It's okay to let it out here. This stays between us. (Optional)" 
+              value={detailedFeelingText}
+              onChange={(e) => setDetailedFeelingText(e.target.value)} 
+            />
+            <div className="flex gap-3">
+              <button 
+                onClick={handleFeelingContinue}
+                className="w-full py-4 md:py-5 bg-teal-500 text-white rounded-full font-bold shadow-xl shadow-teal-200 hover:bg-teal-600 transition-all active:scale-95"
+              >
+                {detailedFeelingText.trim() ? "I'm ready" : "Skip this part"}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -207,7 +268,7 @@ const App: React.FC = () => {
                 value={userState.bio.name}
                 onChange={(e) => updateBio('name', e.target.value)}
                 placeholder="How should I address you?"
-                className="w-full p-4 md:p-5 rounded-[16px] md:rounded-[24px] border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
+                className="w-full p-4 md:p-5 rounded-[16px] md:rounded-[24px] border border-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm bg-slate-900 text-white placeholder:text-slate-400 shadow-inner"
               />
             </div>
             <button 

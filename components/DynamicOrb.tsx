@@ -49,24 +49,24 @@ const DynamicOrb: React.FC<OrbProps> = ({ mood, setMood, size = 'lg', text }) =>
       label: "Feeling Heavy",
       description: "Exhausted or feeling a bit lost.",
       colorClass: mood === Mood.SAD 
-        ? 'bg-indigo-600 text-white border-indigo-700 shadow-xl shadow-indigo-100' 
-        : 'bg-white text-indigo-600 border-indigo-100 hover:border-indigo-200'
+        ? 'bg-indigo-600 text-white border-indigo-700 shadow-xl shadow-indigo-100 scale-[1.02]' 
+        : 'bg-white text-indigo-600 border-indigo-100 hover:border-indigo-300 hover:bg-gradient-to-br hover:from-white hover:to-indigo-50/50 hover:shadow-lg hover:shadow-indigo-50/50 hover:scale-[1.05]'
     },
     {
       type: Mood.ANXIOUS,
       label: "Fast Pulse",
       description: "Restless, mind racing, or on edge.",
       colorClass: mood === Mood.ANXIOUS 
-        ? 'bg-rose-500 text-white border-rose-600 shadow-xl shadow-rose-100' 
-        : 'bg-white text-rose-500 border-rose-100 hover:border-rose-200'
+        ? 'bg-rose-500 text-white border-rose-600 shadow-xl shadow-rose-100 scale-[1.02]' 
+        : 'bg-white text-rose-500 border-rose-100 hover:border-rose-300 hover:bg-gradient-to-br hover:from-white hover:to-rose-50/50 hover:shadow-lg hover:shadow-rose-50/50 hover:scale-[1.05]'
     },
     {
       type: Mood.CALM,
       label: "Grounded",
       description: "Balanced and ready to connect.",
       colorClass: mood === Mood.CALM 
-        ? 'bg-teal-500 text-white border-teal-600 shadow-xl shadow-teal-100' 
-        : 'bg-white text-teal-600 border-teal-100 hover:border-teal-200'
+        ? 'bg-teal-500 text-white border-teal-600 shadow-xl shadow-teal-100 scale-[1.02]' 
+        : 'bg-white text-teal-600 border-teal-100 hover:border-teal-300 hover:bg-gradient-to-br hover:from-white hover:to-teal-50/50 hover:shadow-lg hover:shadow-teal-50/50 hover:scale-[1.05]'
     }
   ];
 
@@ -120,10 +120,10 @@ const DynamicOrb: React.FC<OrbProps> = ({ mood, setMood, size = 'lg', text }) =>
             <button 
               key={opt.type}
               onClick={() => setMood(opt.type)}
-              className={`flex flex-col items-center gap-1 p-4 md:px-6 md:py-6 rounded-[24px] md:rounded-[40px] border transition-all duration-500 hover:scale-[1.03] active:scale-95 group ${opt.colorClass}`}
+              className={`flex flex-col items-center gap-1 p-4 md:px-6 md:py-6 rounded-[24px] md:rounded-[40px] border transition-all duration-300 active:scale-95 group ${opt.colorClass}`}
             >
               <span className="font-bold text-xs md:text-sm tracking-wide">{opt.label}</span>
-              <span className={`text-[9px] md:text-[10px] text-center leading-relaxed font-medium transition-opacity duration-500 ${mood === opt.type ? 'opacity-90' : 'opacity-50 group-hover:opacity-80'}`}>
+              <span className={`text-[9px] md:text-[10px] text-center leading-relaxed font-medium transition-opacity duration-300 ${mood === opt.type ? 'opacity-90' : 'opacity-50 group-hover:opacity-80'}`}>
                 {opt.description}
               </span>
             </button>
