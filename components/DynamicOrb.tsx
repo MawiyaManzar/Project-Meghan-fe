@@ -15,7 +15,7 @@ const DynamicOrb: React.FC<OrbProps> = ({ mood, setMood, size = 'lg', text }) =>
       case Mood.ANXIOUS:
         return {
           bg: 'bg-rose-500',
-          shadow: 'shadow-[0_0_100px_rgba(225,29,72,0.4)]',
+          shadow: 'shadow-[0_0_80px_rgba(225,29,72,0.3)] md:shadow-[0_0_100px_rgba(225,29,72,0.4)]',
           core: 'bg-rose-200',
           accent: 'text-rose-600',
           label: 'Fast Pulse'
@@ -23,7 +23,7 @@ const DynamicOrb: React.FC<OrbProps> = ({ mood, setMood, size = 'lg', text }) =>
       case Mood.SAD:
         return {
           bg: 'bg-indigo-600',
-          shadow: 'shadow-[0_0_100px_rgba(79,70,229,0.4)]',
+          shadow: 'shadow-[0_0_80px_rgba(79,70,229,0.3)] md:shadow-[0_0_100px_rgba(79,70,229,0.4)]',
           core: 'bg-indigo-300',
           accent: 'text-indigo-600',
           label: 'Feeling Heavy'
@@ -32,7 +32,7 @@ const DynamicOrb: React.FC<OrbProps> = ({ mood, setMood, size = 'lg', text }) =>
       default:
         return {
           bg: 'bg-teal-500',
-          shadow: 'shadow-[0_0_100px_rgba(20,184,166,0.4)]',
+          shadow: 'shadow-[0_0_80px_rgba(20,184,166,0.3)] md:shadow-[0_0_100px_rgba(20,184,166,0.4)]',
           core: 'bg-teal-200',
           accent: 'text-teal-600',
           label: 'Grounded'
@@ -41,13 +41,13 @@ const DynamicOrb: React.FC<OrbProps> = ({ mood, setMood, size = 'lg', text }) =>
   };
 
   const colors = getOrbColors();
-  const orbSize = size === 'lg' ? 'w-52 h-52 md:w-72 md:h-72' : 'w-10 h-10';
+  const orbSize = size === 'lg' ? 'w-48 h-48 md:w-72 md:h-72' : 'w-10 h-10';
 
   const moodOptions = [
     {
       type: Mood.SAD,
       label: "Feeling Heavy",
-      description: "I'm exhausted or feeling a bit lost.",
+      description: "Exhausted or feeling a bit lost.",
       colorClass: mood === Mood.SAD 
         ? 'bg-indigo-600 text-white border-indigo-700 shadow-xl shadow-indigo-100' 
         : 'bg-white text-indigo-600 border-indigo-100 hover:border-indigo-200'
@@ -71,15 +71,15 @@ const DynamicOrb: React.FC<OrbProps> = ({ mood, setMood, size = 'lg', text }) =>
   ];
 
   return (
-    <div className="flex flex-col items-center gap-14 w-full max-w-2xl mx-auto relative">
+    <div className="flex flex-col items-center gap-8 md:gap-14 w-full max-w-2xl mx-auto relative">
       {/* Orb Container */}
-      <div className="relative flex items-center justify-center">
+      <div className="relative flex items-center justify-center py-4">
         {/* Thought Ring */}
         {size === 'lg' && text && (
-          <div className="absolute inset-0 -m-16 pointer-events-none animate-[spin_30s_linear_infinite]">
-            <svg viewBox="0 0 200 200" className="w-full h-full opacity-20">
+          <div className="absolute inset-0 -m-8 md:-m-16 pointer-events-none animate-[spin_30s_linear_infinite]">
+            <svg viewBox="0 0 200 200" className="w-full h-full opacity-10 md:opacity-20">
               <path id="curve" fill="transparent" d="M 100, 100 m -85, 0 a 85,85 0 1,0 170,0 a 85,85 0 1,0 -170,0" />
-              <text className="text-[8px] font-bold uppercase tracking-[0.4em] fill-current">
+              <text className="text-[6px] md:text-[8px] font-bold uppercase tracking-[0.4em] fill-current">
                 <textPath xlinkHref="#curve">
                   {text} • {text} • {text} •
                 </textPath>
@@ -96,15 +96,15 @@ const DynamicOrb: React.FC<OrbProps> = ({ mood, setMood, size = 'lg', text }) =>
           `}
         >
           {/* Inner Core */}
-          <div className={`absolute w-3/4 h-3/4 rounded-full ${colors.core} opacity-20 blur-2xl animate-pulse`} />
+          <div className={`absolute w-3/4 h-3/4 rounded-full ${colors.core} opacity-20 blur-xl md:blur-2xl animate-pulse`} />
           
           {/* Surface Glow */}
           <div className="absolute inset-0 bg-gradient-to-tr from-white/20 via-transparent to-white/10 rounded-full" />
           
           {/* Mood Label Center */}
-          <div className="relative z-10 flex flex-col items-center pointer-events-none">
+          <div className="relative z-10 flex flex-col items-center pointer-events-none text-center px-4">
             {size === 'lg' ? (
-              <span className="text-white font-bold text-xl md:text-2xl tracking-tighter drop-shadow-md animate-in fade-in zoom-in duration-1000">
+              <span className="text-white font-bold text-lg md:text-2xl tracking-tighter drop-shadow-md animate-in fade-in zoom-in duration-1000">
                 {colors.label}
               </span>
             ) : (
@@ -115,15 +115,15 @@ const DynamicOrb: React.FC<OrbProps> = ({ mood, setMood, size = 'lg', text }) =>
       </div>
       
       {size === 'lg' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-5 w-full px-4">
           {moodOptions.map((opt) => (
             <button 
               key={opt.type}
               onClick={() => setMood(opt.type)}
-              className={`flex flex-col items-center gap-1.5 px-6 py-6 rounded-[40px] border transition-all duration-500 hover:scale-[1.03] active:scale-95 group ${opt.colorClass}`}
+              className={`flex flex-col items-center gap-1 p-4 md:px-6 md:py-6 rounded-[24px] md:rounded-[40px] border transition-all duration-500 hover:scale-[1.03] active:scale-95 group ${opt.colorClass}`}
             >
-              <span className="font-bold text-sm tracking-wide">{opt.label}</span>
-              <span className={`text-[10px] text-center leading-relaxed font-medium transition-opacity duration-500 ${mood === opt.type ? 'opacity-90' : 'opacity-50 group-hover:opacity-80'}`}>
+              <span className="font-bold text-xs md:text-sm tracking-wide">{opt.label}</span>
+              <span className={`text-[9px] md:text-[10px] text-center leading-relaxed font-medium transition-opacity duration-500 ${mood === opt.type ? 'opacity-90' : 'opacity-50 group-hover:opacity-80'}`}>
                 {opt.description}
               </span>
             </button>

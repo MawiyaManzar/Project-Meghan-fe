@@ -47,36 +47,36 @@ const KnowledgeCenter: React.FC<KnowledgeCenterProps> = ({ bio, onUpdate }) => {
     },
   ];
 
-  const filledCount = Object.values(bio).filter(v => typeof v === 'string' && v.trim() !== '').length;
+  const filledCount = fields.filter(f => bio[f.key] && bio[f.key]!.trim() !== '').length;
   const progress = (filledCount / fields.length) * 100;
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Blueprint Header */}
-      <div className="glass p-8 rounded-[48px] shadow-2xl border border-indigo-50 relative overflow-hidden bg-gradient-to-br from-white to-indigo-50/20">
-        <div className="absolute top-0 right-0 p-8 opacity-10">
+      <div className="glass p-6 md:p-8 rounded-[32px] md:rounded-[48px] shadow-2xl border border-indigo-50 relative overflow-hidden bg-gradient-to-br from-white to-indigo-50/20">
+        <div className="absolute top-0 right-0 p-8 opacity-10 hidden sm:block">
           <BrainCircuit size={120} className="text-indigo-600" />
         </div>
         
         <div className="relative z-10">
           <div className="flex items-center gap-4 mb-6">
-            <div className="p-4 bg-indigo-600 text-white rounded-3xl shadow-lg shadow-indigo-100">
-              <Sparkles size={28} />
+            <div className="p-3 md:p-4 bg-indigo-600 text-white rounded-2xl md:rounded-3xl shadow-lg shadow-indigo-100">
+              <Sparkles size={24} md:size={28} />
             </div>
             <div>
-              <h2 className="text-3xl font-bold text-slate-800 tracking-tight">The Personal Blueprint</h2>
-              <p className="text-slate-500 font-medium">Defining the details that fuel your Growth Phase.</p>
+              <h2 className="text-xl md:text-3xl font-bold text-slate-800 tracking-tight">The Personal Blueprint</h2>
+              <p className="text-slate-500 text-xs md:text-sm font-medium">Defining the details that fuel your Growth Phase.</p>
             </div>
           </div>
 
           <div className="space-y-3">
-            <div className="flex justify-between text-sm font-bold items-center">
-              <span className="text-indigo-600 uppercase tracking-widest text-[10px]">Syncing with Future Self</span>
-              <span className="text-slate-400 text-xs">{Math.round(progress)}% Defined</span>
+            <div className="flex justify-between text-[9px] md:text-[10px] font-bold items-center">
+              <span className="text-indigo-600 uppercase tracking-widest">Syncing with Future Self</span>
+              <span className="text-slate-400">{Math.round(progress)}% Defined</span>
             </div>
-            <div className="w-full bg-slate-100/50 h-5 rounded-full overflow-hidden p-1 border border-slate-100">
+            <div className="w-full bg-slate-100/50 h-4 md:h-5 rounded-full overflow-hidden p-1 border border-slate-100">
               <div 
-                className="bg-gradient-to-r from-teal-400 via-indigo-500 to-indigo-600 h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(99,102,241,0.3)]"
+                className="bg-gradient-to-r from-teal-400 via-indigo-500 to-indigo-600 h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(99,102,241,0.3)]"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -85,22 +85,22 @@ const KnowledgeCenter: React.FC<KnowledgeCenterProps> = ({ bio, onUpdate }) => {
       </div>
 
       {/* Blueprint Fields Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {fields.map((f) => (
-          <div key={f.key} className={`glass p-6 rounded-[32px] border transition-all duration-500 group ${bio[f.key] ? 'border-emerald-100 bg-white shadow-md' : 'border-slate-100 bg-slate-50/30 hover:border-indigo-200'}`}>
-            <div className="flex items-center justify-between mb-4">
+          <div key={f.key} className={`glass p-5 md:p-6 rounded-[24px] md:rounded-[32px] border transition-all duration-500 group ${bio[f.key] ? 'border-emerald-100 bg-white shadow-md' : 'border-slate-100 bg-slate-50/30 hover:border-indigo-200'}`}>
+            <div className="flex items-center justify-between mb-3 md:mb-4">
               <div className="flex items-center gap-3">
-                <div className={`p-2.5 rounded-2xl transition-colors ${bio[f.key] ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400 group-hover:bg-indigo-100 group-hover:text-indigo-600'}`}>
+                <div className={`p-2 rounded-xl md:rounded-2xl transition-colors ${bio[f.key] ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400 group-hover:bg-indigo-100 group-hover:text-indigo-600'}`}>
                   {f.icon}
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-800 text-sm">{f.label}</h4>
-                  <p className="text-[10px] text-slate-400 font-medium">{f.sub}</p>
+                  <h4 className="font-bold text-slate-800 text-xs md:text-sm">{f.label}</h4>
+                  <p className="text-[9px] md:text-[10px] text-slate-400 font-medium">{f.sub}</p>
                 </div>
               </div>
-              {bio[f.key] && bio[f.key].trim() !== '' && (
+              {bio[f.key] && bio[f.key]!.trim() !== '' && (
                 <div className="bg-emerald-500 text-white p-1 rounded-full animate-in zoom-in">
-                  <CheckCircle size={14} />
+                  <CheckCircle size={12} />
                 </div>
               )}
             </div>
@@ -111,7 +111,7 @@ const KnowledgeCenter: React.FC<KnowledgeCenterProps> = ({ bio, onUpdate }) => {
                 value={bio[f.key] || ''}
                 onChange={(e) => onUpdate(f.key, e.target.value)}
                 placeholder={f.placeholder}
-                className="w-full bg-transparent border-b border-slate-200 py-2 focus:border-indigo-500 focus:outline-none text-sm text-slate-700 placeholder:text-slate-300 transition-colors"
+                className="w-full bg-transparent border-b border-slate-200 py-2 focus:border-indigo-500 focus:outline-none text-xs md:text-sm text-slate-700 placeholder:text-slate-300 transition-colors"
               />
             </div>
           </div>
@@ -119,16 +119,16 @@ const KnowledgeCenter: React.FC<KnowledgeCenterProps> = ({ bio, onUpdate }) => {
       </div>
       
       {/* Sibling Tip Section */}
-      <div className="bg-slate-900 text-white p-10 rounded-[48px] shadow-2xl relative overflow-hidden group">
-        <div className="absolute bottom-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -mb-32 -mr-32 group-hover:scale-110 transition-transform duration-1000" />
-        <div className="flex flex-col md:flex-row gap-8 items-center relative z-10 text-center md:text-left">
-          <div className="w-20 h-20 bg-white/10 rounded-[32px] flex items-center justify-center backdrop-blur-xl border border-white/10 shrink-0">
-             <span className="text-4xl">💡</span>
+      <div className="bg-slate-900 text-white p-6 md:p-10 rounded-[32px] md:rounded-[48px] shadow-2xl relative overflow-hidden group">
+        <div className="absolute bottom-0 right-0 w-48 h-48 md:w-64 md:h-64 bg-indigo-500/10 rounded-full blur-3xl -mb-24 -mr-24 md:-mb-32 md:-mr-32 group-hover:scale-110 transition-transform duration-1000" />
+        <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center relative z-10 text-center md:text-left">
+          <div className="w-16 h-16 md:w-20 md:h-20 bg-white/10 rounded-[24px] md:rounded-[32px] flex items-center justify-center backdrop-blur-xl border border-white/10 shrink-0">
+             <span className="text-3xl md:text-4xl">💡</span>
           </div>
           <div className="space-y-2">
-            <h3 className="text-xl font-bold">Why this matters to Meghan</h3>
-            <p className="text-slate-300 text-sm leading-relaxed max-w-xl">
-              "When I know your North Star, I can stop giving generic advice. If you're stressed about an exam but your value is 'Growth,' I can remind you that a hurdle is just a workout for your brain. We're building your future self together, one detail at a time."
+            <h3 className="text-lg md:text-xl font-bold">Why this matters to Meghan</h3>
+            <p className="text-slate-300 text-xs md:text-sm leading-relaxed max-w-xl">
+              "When I know your North Star, I can stop giving generic advice. We're building your future self together, one detail at a time."
             </p>
           </div>
         </div>
