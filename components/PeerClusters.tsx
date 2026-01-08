@@ -121,7 +121,7 @@ const PeerClusters: React.FC<PeerClustersProps> = ({ source, empathyPoints, onEm
               value={supportText}
               onChange={(e) => setSupportText(e.target.value)}
               placeholder={`Write something grounding for the ${myCluster.members} others in this space...`}
-              className="w-full p-6 rounded-[32px] border border-slate-100 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-100 min-h-[140px] text-sm leading-relaxed transition-all"
+              className="w-full p-6 rounded-[32px] border border-slate-100 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-100 min-h-[140px] text-sm leading-relaxed transition-all text-slate-900"
             />
             {showSuccess && (
               <div className="absolute inset-0 bg-emerald-500/95 rounded-[32px] flex flex-col items-center justify-center text-white animate-in fade-in zoom-in duration-300 z-10 text-center px-4">

@@ -121,7 +121,7 @@ const Chat: React.FC<ChatProps> = ({ tier, mood, source, bio, onXPGain }) => {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           placeholder="Share what's on your mind..."
-          className="flex-1 bg-white px-4 py-2 rounded-full border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-400 transition-all text-sm"
+          className="flex-1 bg-white px-4 py-2 rounded-full border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-400 transition-all text-sm text-slate-900"
         />
         <button 
           onClick={handleSend}

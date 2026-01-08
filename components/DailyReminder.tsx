@@ -57,7 +57,7 @@ const DailyReminder: React.FC<DailyReminderProps> = ({ initialText, onSaveText }
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Type a message you want to see every day..."
-            className="w-full p-5 rounded-3xl border border-slate-100 bg-white/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm min-h-[100px] transition-all leading-relaxed"
+            className="w-full p-5 rounded-3xl border border-slate-100 bg-white/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm text-slate-900 min-h-[100px] transition-all leading-relaxed"
           />
           <button 
             onClick={() => onSaveText(text)}
